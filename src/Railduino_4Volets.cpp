@@ -1,5 +1,5 @@
 #include <Arduino.h>
- //test2
+
 
 #include <Shutters.h>
 #include <PubSubClient.h>
@@ -8,6 +8,7 @@
 #include <Ethernet.h>
 
 boolean debug = true;
+
 // Network settings
 byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
 IPAddress ip(192, 168, 10, 11);
@@ -50,6 +51,7 @@ int status1 = 0;
 int status2 = 0;
 int status3 = 0;
 int status4 = 0;
+int initialize  = 0; // Initialyse the commutators state when reset
 //
 // auto reconnect to mosquitto server
 //
@@ -332,6 +334,7 @@ void StateChangeDetectionInit() {
 	  laststatus2 = status2;
 	  laststatus3 = status3;
 	  laststatus4 = status4;
+	  initialize = 1;
 	  break;
      }
 
@@ -365,61 +368,64 @@ void switching(int ShuttersNumber, int statusX) {
      break;
     case 0:
      Serial.println("ERREUR");
-     break;
-  }
+	 break;
+	}
 }
 //
 // Fonction pour surveiller le changement d'�tat des inters (commutateur filaire pour volets) exemple Arduino
 //
 void StateChangeDetection() {
-   if ((unsigned long)(millis() - previousMillis) >= 50) {
-   // save the last time you blinked the LED
-   previousMillis = millis();
-    for (int i = 0; i < numOfDigInputs; i++) {
-     InputState[i] = digitalRead(InputPins[i]);
-     if (InputState[i] != lastInputState[i]) {
-      if (InputState[i] == HIGH) {
-	  Serial.print("InputState[i], i = ");
-      Serial.print(i + 1);
-      Serial.println(" LOW");
-      int status1 = InputState[1 - 1]*10 + InputState[2 - 1];
-      int status2 = InputState[3 - 1]*10 + InputState[4 - 1];
-      int status3 = InputState[5 - 1]*10 + InputState[6 - 1];
-      int status4 = InputState[11 - 1]*10 + InputState[12 - 1];
-      if (status1 != laststatus1){ switching(1 , status1); }
-      laststatus1 = status1;
-      if (status2 != laststatus2){ switching(2 , status2); }
-      laststatus2 = status2;
-      if (status3 != laststatus3){ switching(3 , status3); }
-      laststatus3 = status3;
-      if (status4 != laststatus4){ switching(4 , status4); }
-      laststatus4 = status4;
-     }
-      else {
-	  Serial.print("InputState[i], i = ");
-      Serial.print(i + 1);
-      Serial.println(" HIGH");
-      int status1 = InputState[1 - 1]*10 + InputState[2 - 1];
-      int status2 = InputState[3 - 1]*10 + InputState[4 - 1];
-      int status3 = InputState[5 - 1]*10 + InputState[6 - 1];
-      int status4 = InputState[11 - 1]*10 + InputState[12 - 1];
-      if (status1 != laststatus1){ switching(1 , status1); }
-      laststatus1 = status1;
-      if (status2 != laststatus2){ switching(2 , status2); }
-      laststatus2 = status2;
-      if (status3 != laststatus3){ switching(3 , status3); }
-      laststatus3 = status3;
-      if (status4 != laststatus4){ switching(4 , status4); }
-      laststatus4 = status4;
-    }
-     }
-     lastInputState[i] = InputState[i];
-    }
-   }
+	if (initialize == 0) {Serial.println("inialized");}
+	else {
+		if ((unsigned long)(millis() - previousMillis) >= 50) {
+	   // save the last time you blinked the LED
+	   previousMillis = millis();
+		for (int i = 0; i < numOfDigInputs; i++) {
+		 InputState[i] = digitalRead(InputPins[i]);
+		 if (InputState[i] != lastInputState[i]) {
+		  if (InputState[i] == HIGH) {
+		  Serial.print("InputState[i], i = ");
+		  Serial.print(i + 1);
+		  Serial.println(" LOW");
+		  int status1 = InputState[1 - 1]*10 + InputState[2 - 1];
+		  int status2 = InputState[3 - 1]*10 + InputState[4 - 1];
+		  int status3 = InputState[5 - 1]*10 + InputState[6 - 1];
+		  int status4 = InputState[11 - 1]*10 + InputState[12 - 1];
+		  if (status1 != laststatus1){ switching(1 , status1); }
+		  laststatus1 = status1;
+		  if (status2 != laststatus2){ switching(2 , status2); }
+		  laststatus2 = status2;
+		  if (status3 != laststatus3){ switching(3 , status3); }
+		  laststatus3 = status3;
+		  if (status4 != laststatus4){ switching(4 , status4); }
+		  laststatus4 = status4;
+		 }
+		  else {
+		  Serial.print("InputState[i], i = ");
+		  Serial.print(i + 1);
+		  Serial.println(" HIGH");
+		  int status1 = InputState[1 - 1]*10 + InputState[2 - 1];
+		  int status2 = InputState[3 - 1]*10 + InputState[4 - 1];
+		  int status3 = InputState[5 - 1]*10 + InputState[6 - 1];
+		  int status4 = InputState[11 - 1]*10 + InputState[12 - 1];
+		  if (status1 != laststatus1){ switching(1 , status1); }
+		  laststatus1 = status1;
+		  if (status2 != laststatus2){ switching(2 , status2); }
+		  laststatus2 = status2;
+		  if (status3 != laststatus3){ switching(3 , status3); }
+		  laststatus3 = status3;
+		  if (status4 != laststatus4){ switching(4 , status4); }
+		  laststatus4 = status4;
+		}
+		 }
+		 lastInputState[i] = InputState[i];
+		}
+	   }
+		}
 }
 void setup() {
   Serial.begin(9600);
-  /// stay at the start of the setup for initialise the commutators state
+  /// stay at the start of the setup for initialize the commutators state
   for (int i = 1; i < numOfRelays; i = i + 2) {
         pinMode(RelayPins[i], OUTPUT);
   }
@@ -447,6 +453,7 @@ void setup() {
 
 void loop() {
 
+  
   if (!client.connected()) {
 
     long now = millis();
