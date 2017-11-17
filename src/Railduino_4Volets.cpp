@@ -21,10 +21,17 @@ char TheTopic[] = "0";
 char msg[80];
 char TheTopicAssemble[80];
 // Shutters settings
-const unsigned long courseTime1 = 27 * 1000;
-const unsigned long courseTime2 = 27 * 1000;
-const unsigned long courseTime3 = 27 * 1000;
-const unsigned long courseTime4 = 27 * 1000;
+const byte eepromOffset = 0;
+
+const unsigned long upCourseTime1 = 27 * 1000;
+const unsigned long upCourseTime2 = 27 * 1000;
+const unsigned long upCourseTime3 = 27 * 1000;
+const unsigned long upCourseTime4 = 27 * 1000;
+
+const unsigned long downCourseTime1 = 27 * 1000;
+const unsigned long downCourseTime2 = 27 * 1000;
+const unsigned long downCourseTime3 = 27 * 1000;
+const unsigned long downCourseTime4 = 27 * 1000;
 const float calibrationRatio = 0.1;
 const byte SHUTTERS1_EEPROM_POSITION = 1;
 const byte SHUTTERS2_EEPROM_POSITION = 2;
@@ -133,6 +140,30 @@ void shutters1Halt() {
   // TODO: Implement the code for the shutters1 to halt
   stp(1);
 }
+char* shutters1GetState(Shutters* shutters, byte length) {
+  char state[length + 1];
+  for (uint8_t i = 0; i < length; i++) {
+    state[i] = EEPROM.read(eepromOffset + i);
+  }
+  state[length] = '\0';
+
+  return strdup(state);
+}
+
+void shutters1SetState(Shutters* shutters, const char* state, byte length) {
+  for (byte i = 0; i < length; i++) {
+    EEPROM.write(eepromOffset + i, state[i]);
+    #ifdef ESP8266
+    EEPROM.commit();
+    #endif
+  }
+}
+void onShutters1LevelReached(Shutters* shutters, byte level) {
+  Serial.print("Shutters at ");
+  Serial.print(level);
+  Serial.println("%");
+}
+/*
 uint8_t shutters1GetState() {
   return EEPROM.read(SHUTTERS1_EEPROM_POSITION);
 }
@@ -149,7 +180,8 @@ void onshutters1LevelReached(uint8_t level) {
   Serial.print(level);
   Serial.println("%");}
 }
-Shutters shutters1(courseTime1, shutters1Up, shutters1Down, shutters1Halt, shutters1GetState, shutters1SetState, calibrationRatio, onshutters1LevelReached);
+*/
+Shutters shutters1(shutters1Up, shutters1Down, shutters1Halt, shutters1GetState, shutters1SetState);
 // Pour chaque volet...2
 void shutters2Up() {
   Serial.println("shutters2 going up.");
@@ -166,6 +198,30 @@ void shutters2Halt() {
   // TODO: Implement the code for the shutters2 to halt
   stp(2);
 }
+char* shutters2GetState(Shutters* shutters, byte length) {
+  char state[length + 1];
+  for (uint8_t i = 0; i < length; i++) {
+    state[i] = EEPROM.read(eepromOffset + i);
+  }
+  state[length] = '\0';
+
+  return strdup(state);
+}
+
+void shutters2SetState(Shutters* shutters, const char* state, byte length) {
+  for (byte i = 0; i < length; i++) {
+    EEPROM.write(eepromOffset + i, state[i]);
+    #ifdef ESP8266
+    EEPROM.commit();
+    #endif
+  }
+}
+void onShutters2LevelReached(Shutters* shutters, byte level) {
+  Serial.print("Shutters at ");
+  Serial.print(level);
+  Serial.println("%");
+}
+/*
 uint8_t shutters2GetState() {
   return EEPROM.read(SHUTTERS2_EEPROM_POSITION);
 }
@@ -181,7 +237,8 @@ void onshutters2LevelReached(uint8_t level) {
   Serial.print(level);
   Serial.println("%");}
 }
-Shutters shutters2(courseTime2, shutters2Up, shutters2Down, shutters2Halt, shutters2GetState, shutters2SetState, calibrationRatio, onshutters2LevelReached);
+*/
+Shutters shutters2(shutters2Up, shutters2Down, shutters2Halt, shutters2GetState, shutters2SetState);
 // ...3...
 void shutters3Up() {
   if (debug == true) Serial.println("shutters3 going up.");
@@ -198,6 +255,30 @@ void shutters3Halt() {
   // TODO: Implement the code for the shutters3 to halt
   stp(3);
 }
+char* shutters3GetState(Shutters* shutters, byte length) {
+  char state[length + 1];
+  for (uint8_t i = 0; i < length; i++) {
+    state[i] = EEPROM.read(eepromOffset + i);
+  }
+  state[length] = '\0';
+
+  return strdup(state);
+}
+
+void shutters3SetState(Shutters* shutters, const char* state, byte length) {
+  for (byte i = 0; i < length; i++) {
+    EEPROM.write(eepromOffset + i, state[i]);
+    #ifdef ESP8266
+    EEPROM.commit();
+    #endif
+  }
+}
+void onShutters3LevelReached(Shutters* shutters, byte level) {
+  Serial.print("Shutters at ");
+  Serial.print(level);
+  Serial.println("%");
+}
+/*
 uint8_t shutters3GetState() {
   return EEPROM.read(SHUTTERS3_EEPROM_POSITION);
 }
@@ -213,7 +294,8 @@ void onshutters3LevelReached(uint8_t level) {
   Serial.print(level);
   Serial.println("%");}
 }
-Shutters shutters3(courseTime3, shutters3Up, shutters3Down, shutters3Halt, shutters3GetState, shutters3SetState, calibrationRatio, onshutters3LevelReached);
+*/
+Shutters shutters3(shutters3Up, shutters3Down, shutters3Halt, shutters3GetState, shutters3SetState);
 // ...4.
 void shutters4Up() {
   if (debug == true) Serial.println("shutters4 going up.");
@@ -230,6 +312,30 @@ void shutters4Halt() {
   // TODO: Implement the code for the shutters4 to halt
   stp(4);
 }
+char* shutters4GetState(Shutters* shutters, byte length) {
+  char state[length + 1];
+  for (uint8_t i = 0; i < length; i++) {
+    state[i] = EEPROM.read(eepromOffset + i);
+  }
+  state[length] = '\0';
+
+  return strdup(state);
+}
+
+void shutters4SetState(Shutters* shutters, const char* state, byte length) {
+  for (byte i = 0; i < length; i++) {
+    EEPROM.write(eepromOffset + i, state[i]);
+    #ifdef ESP8266
+    EEPROM.commit();
+    #endif
+  }
+}
+void onShutters4LevelReached(Shutters* shutters, byte level) {
+  Serial.print("Shutters at ");
+  Serial.print(level);
+  Serial.println("%");
+}
+/*
 uint8_t shutters4GetState() {
   return EEPROM.read(SHUTTERS4_EEPROM_POSITION);
 }
@@ -245,7 +351,8 @@ void onshutters4LevelReached(uint8_t level) {
   Serial.print(level);
   Serial.println("%");}
 }
-Shutters shutters4(courseTime4, shutters4Up, shutters4Down, shutters4Halt, shutters4GetState, shutters4SetState, calibrationRatio, onshutters4LevelReached);
+*/
+Shutters shutters4(shutters4Up, shutters4Down, shutters4Halt, shutters4GetState, shutters4SetState);
 
 
 /////// Receve a MQQT
@@ -442,12 +549,31 @@ void setup() {
   delay(1500);
   lastReconnectAttempt = 0;
 
+  shutters1
+    .setCourseTime(upCourseTime1, downCourseTime1)
+    .onLevelReached(onShuttersLevelReached)
+    .begin()
+    .setLevel(30); // Go to 50%    
 
+  shutters2
+    .setCourseTime(upCourseTime2, downCourseTime2)
+    .onLevelReached(onShuttersLevelReached)
+    .begin()
+    .setLevel(30); // Go to 50%  
+	
+  shutters3
+    .setCourseTime(upCourseTime3, downCourseTime3)
+    .onLevelReached(onShuttersLevelReached)
+    .begin()
+    .setLevel(30); // Go to 50%    
 
-  shutters1.begin();
-  shutters2.begin();
-  shutters3.begin();
-  shutters4.begin();
+  shutters4
+    .setCourseTime(upCourseTime4, downCourseTime4)
+    .onLevelReached(onShuttersLevelReached)
+    .begin()
+    .setLevel(30); // Go to 50%  
+	
+  
 
 }
 
