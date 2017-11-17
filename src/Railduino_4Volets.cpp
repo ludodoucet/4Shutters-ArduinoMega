@@ -7,7 +7,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
-boolean debug = true;
+boolean debug = false;
 
 // Network settings
 byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
@@ -109,7 +109,7 @@ void sendMQTTPayload(String topic, String payload) {
 //
 String CreateTheMessage(int ShuttersState) {
   String TheMessage = String(ShuttersState);
-  Serial.println(TheMessage);
+  if (debug == true) Serial.println(TheMessage);
   return TheMessage;
 }
 //////// MQTTout
@@ -119,12 +119,12 @@ void MQTTout(int ShuttersNumber, int ShuttersState) {sendMQTTPayload(CreeTheTopi
 // Come from Shutter.h' s example file
 //
 void shutters1Up() {
-  Serial.println("shutters1 going up.");
+  if (debug == true) Serial.println("shutters1 going up.");
   // TODO: Implement the code for the shutters1 to go up
   up(1);
 }
 void shutters1Down() {
-  Serial.println("shutters1 going down.");
+  if (debug == true) Serial.println("shutters1 going down.");
   // TODO: Implement the code for the shutters1 to go down
   down(1);
 }
@@ -145,9 +145,9 @@ void shutters1SetState(uint8_t state) {
   if (state != 255)  {  MQTTout(1, state);}
 }
 void onshutters1LevelReached(uint8_t level) {
-  if (debug == true) {Serial.print("shutters1 at ");}
+  if (debug == true) {Serial.print("shutters1 at ");
   Serial.print(level);
-  Serial.println("%");
+  Serial.println("%");}
 }
 Shutters shutters1(courseTime1, shutters1Up, shutters1Down, shutters1Halt, shutters1GetState, shutters1SetState, calibrationRatio, onshutters1LevelReached);
 // Pour chaque volet...2
@@ -170,31 +170,31 @@ uint8_t shutters2GetState() {
   return EEPROM.read(SHUTTERS2_EEPROM_POSITION);
 }
 void shutters2SetState(uint8_t state) {
-  Serial.print("Saving state ");
-  Serial.print(state);
+  if (debug == true) {Serial.print("Saving state ");
+  Serial.print(state);}
   Serial.println(".");
   EEPROM.write(SHUTTERS2_EEPROM_POSITION, state);
   if (state != 255)  {  MQTTout(2, state);}
 }
 void onshutters2LevelReached(uint8_t level) {
-  Serial.print("shutters2 at ");
+  if (debug == true) {Serial.print("shutters2 at ");
   Serial.print(level);
-  Serial.println("%");
+  Serial.println("%");}
 }
 Shutters shutters2(courseTime2, shutters2Up, shutters2Down, shutters2Halt, shutters2GetState, shutters2SetState, calibrationRatio, onshutters2LevelReached);
 // ...3...
 void shutters3Up() {
-  Serial.println("shutters3 going up.");
+  if (debug == true) Serial.println("shutters3 going up.");
   // TODO: Implement the code for the shutters3 to go up
   up(3);
 }
 void shutters3Down() {
-  Serial.println("shutters3 going down.");
+  if (debug == true) Serial.println("shutters3 going down.");
   // TODO: Implement the code for the shutters3 to go down
   down(3);
 }
 void shutters3Halt() {
-  Serial.println("shutters3 halted.");
+  if (debug == true) Serial.println("shutters3 halted.");
   // TODO: Implement the code for the shutters3 to halt
   stp(3);
 }
@@ -202,31 +202,31 @@ uint8_t shutters3GetState() {
   return EEPROM.read(SHUTTERS3_EEPROM_POSITION);
 }
 void shutters3SetState(uint8_t state) {
-  Serial.print("Saving state ");
+  if (debug == true) {Serial.print("Saving state ");
   Serial.print(state);
-  Serial.println(".");
+  Serial.println(".");}
   EEPROM.write(SHUTTERS3_EEPROM_POSITION, state);
   if (state != 255)  {  MQTTout(3, state);}
 }
 void onshutters3LevelReached(uint8_t level) {
-  Serial.print("shutters3 at ");
+  if (debug == true) {Serial.print("shutters3 at ");
   Serial.print(level);
-  Serial.println("%");
+  Serial.println("%");}
 }
 Shutters shutters3(courseTime3, shutters3Up, shutters3Down, shutters3Halt, shutters3GetState, shutters3SetState, calibrationRatio, onshutters3LevelReached);
 // ...4.
 void shutters4Up() {
-  Serial.println("shutters4 going up.");
+  if (debug == true) Serial.println("shutters4 going up.");
   // TODO: Implement the code for the shutters4 to go up
   up(4);
 }
 void shutters4Down() {
-  Serial.println("shutters4 going down.");
+  if (debug == true) Serial.println("shutters4 going down.");
   // TODO: Implement the code for the shutters4 to go down
   down(4);
 }
 void shutters4Halt() {
-  Serial.println("shutters4 halted.");
+  if (debug == true) Serial.println("shutters4 halted.");
   // TODO: Implement the code for the shutters4 to halt
   stp(4);
 }
@@ -234,16 +234,16 @@ uint8_t shutters4GetState() {
   return EEPROM.read(SHUTTERS4_EEPROM_POSITION);
 }
 void shutters4SetState(uint8_t state) {
-  Serial.print("Saving state ");
+  if (debug == true) {Serial.print("Saving state ");
   Serial.print(state);
-  Serial.println(".");
+  Serial.println(".");}
   EEPROM.write(SHUTTERS4_EEPROM_POSITION, state);
   if (state != 255)  {  MQTTout(1, state);}
 }
 void onshutters4LevelReached(uint8_t level) {
-  Serial.print("shutters4 at ");
+  if (debug == true) {Serial.print("shutters4 at ");
   Serial.print(level);
-  Serial.println("%");
+  Serial.println("%");}
 }
 Shutters shutters4(courseTime4, shutters4Up, shutters4Down, shutters4Halt, shutters4GetState, shutters4SetState, calibrationRatio, onshutters4LevelReached);
 
@@ -251,8 +251,8 @@ Shutters shutters4(courseTime4, shutters4Up, shutters4Down, shutters4Halt, shutt
 /////// Receve a MQQT
 // Fonction pour definir les actions suite � un message re�u
 void MQTTcommande(int ShuttersNumber, String valeur) {
-  Serial.print(ShuttersNumber);
-  Serial.println(valeur);
+  if (debug == true) {Serial.print(ShuttersNumber);
+  Serial.println(valeur);}
   if (valeur == "UP") {
     if (ShuttersNumber == 1) {shutters1.setLevel(0);}
     if (ShuttersNumber == 2) {shutters2.setLevel(0);}
@@ -301,8 +301,8 @@ void TraductionTheMessage(char* topic, char* valeur) {
     ptr = strtok(NULL, delimiter);
     ii++;
   }
-  Serial.print(ShuttersNumber);
-  Serial.println(valeur);
+  if (debug == true) {Serial.print(ShuttersNumber);
+  Serial.println(valeur);}
   MQTTcommande(ShuttersNumber, valeur);
 }
 //
@@ -325,7 +325,7 @@ void StateChangeDetectionInit() {
     for (int i = 0; i < numOfDigInputs; i++) {
      InputState[i] = digitalRead(InputPins[i]);
 
-	  Serial.println("assigne la bonne valeur � laststatus1, 2...");
+	  if (debug == true) Serial.println("assigne la bonne valeur � laststatus1, 2...");
 	  status1 = InputState[1 - 1]*10 + InputState[2 - 1];
 	  status2 = InputState[3 - 1]*10 + InputState[4 - 1];
 	  status3 = InputState[5 - 1]*10 + InputState[6 - 1];
@@ -342,10 +342,10 @@ void StateChangeDetectionInit() {
 // Fonction pour interpreter l'�tat des inters apr�s un changement d'�tat
 //
 void switching(int ShuttersNumber, int statusX) {
-  Serial.print("ShuttersNumber = ");
+  if (debug == true) {Serial.print("ShuttersNumber = ");
   Serial.print(ShuttersNumber);
   Serial.print(", statusX = ");
-  Serial.println(statusX);
+  Serial.println(statusX);}
   // statusX, 10 descent, 1 monte, 11 stop, 0 bug
   switch (statusX) {
     case 10:
@@ -375,7 +375,7 @@ void switching(int ShuttersNumber, int statusX) {
 // Fonction pour surveiller le changement d'�tat des inters (commutateur filaire pour volets) exemple Arduino
 //
 void StateChangeDetection() {
-	if (initialize == 0) {Serial.println("inialized");}
+	if (initialize == 0 and debug == true) {Serial.println("inialized");}
 	else {
 		if ((unsigned long)(millis() - previousMillis) >= 50) {
 	   // save the last time you blinked the LED
@@ -384,9 +384,9 @@ void StateChangeDetection() {
 		 InputState[i] = digitalRead(InputPins[i]);
 		 if (InputState[i] != lastInputState[i]) {
 		  if (InputState[i] == HIGH) {
-		  Serial.print("InputState[i], i = ");
+		  if (debug == true) {Serial.print("InputState[i], i = ");
 		  Serial.print(i + 1);
-		  Serial.println(" LOW");
+		  Serial.println(" LOW");}
 		  int status1 = InputState[1 - 1]*10 + InputState[2 - 1];
 		  int status2 = InputState[3 - 1]*10 + InputState[4 - 1];
 		  int status3 = InputState[5 - 1]*10 + InputState[6 - 1];
@@ -401,9 +401,9 @@ void StateChangeDetection() {
 		  laststatus4 = status4;
 		 }
 		  else {
-		  Serial.print("InputState[i], i = ");
+		  if (debug == true) {Serial.print("InputState[i], i = ");
 		  Serial.print(i + 1);
-		  Serial.println(" HIGH");
+		  Serial.println(" HIGH");}
 		  int status1 = InputState[1 - 1]*10 + InputState[2 - 1];
 		  int status2 = InputState[3 - 1]*10 + InputState[4 - 1];
 		  int status3 = InputState[5 - 1]*10 + InputState[6 - 1];
