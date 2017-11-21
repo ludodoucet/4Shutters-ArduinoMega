@@ -1,50 +1,80 @@
-#include <Arduino.h>
-
 #include <Shutters.h>
+#include <EEPROM.h>
 
-const unsigned long courseTime = 30 * 1000;
+const byte eepromOffset = 0;
+const unsigned long upCourseTime = 30 * 1000;
+const unsigned long downCourseTime = 45 * 1000;
 const float calibrationRatio = 0.1;
 
-void shuttersUp() {
-  Serial.println("Shutters going up.");
-  // TODO: Implement the code for the shutters to go up
+void shuttersOperationHandler(Shutters* s, ShuttersOperation operation) {
+  switch (operation) {
+    case ShuttersOperation::UP:
+      Serial.println("Shutters going up.");
+      // TODO: Implement the code for the shutters to go up
+      break;
+    case ShuttersOperation::DOWN:
+      Serial.println("Shutters going down.");
+      // TODO: Implement the code for the shutters to go down
+      break;
+    case ShuttersOperation::HALT:
+      Serial.println("Shutters halting.");
+      // TODO: Implement the code for the shutters to halt
+      break;
+  }
 }
 
-void shuttersDown() {
-  Serial.println("Shutters going down.");
-  // TODO: Implement the code for the shutters to go down
+void readInEeprom(char* dest, byte length) {
+  for (byte i = 0; i < length; i++) {
+    dest[i] = EEPROM.read(eepromOffset + i);
+  }
 }
 
-void shuttersHalt() {
-  Serial.println("Shutters halted.");
-  // TODO: Implement the code for the shutters to halt
+void shuttersWriteStateHandler(Shutters* shutters, const char* state, byte length) {
+  for (byte i = 0; i < length; i++) {
+    EEPROM.write(eepromOffset + i, state[i]);
+    #ifdef ESP8266
+    EEPROM.commit();
+    #endif
+  }
 }
 
-uint8_t shuttersGetState() {
-  return 255;
-}
-
-void shuttersSetState(uint8_t state) {
-  Serial.print("Saving state ");
-  Serial.print(state);
-  Serial.println(".");
-}
-
-void onShuttersLevelReached(uint8_t level) {
+void onShuttersLevelReached(Shutters* shutters, byte level) {
   Serial.print("Shutters at ");
   Serial.print(level);
   Serial.println("%");
 }
 
-Shutters shutters(courseTime, shuttersUp, shuttersDown, shuttersHalt, shuttersGetState, shuttersSetState, calibrationRatio, onShuttersLevelReached);
+Shutters shutters;
 
 void setup() {
   Serial.begin(9600);
-  shutters.begin();
+  delay(100);
+  #ifdef ESP8266
+  EEPROM.begin(512);
+  #endif
+  Serial.println();
+  Serial.println("*** Starting ***");
 
-  shutters.setLevel(50); // Go to 50%
+  char storedShuttersState[shutters.getStateLength()];
+  readInEeprom(&storedShuttersState, shutters.getStateLength());
+  shutters
+    .setOperationHandler(shuttersOperationHandler)
+    .setWriteStateHandler(shuttersWriteStateHandler)
+    .restoreState(storedShuttersState)
+    .setCourseTime(upCourseTime, downCourseTime)
+    .onLevelReached(onShuttersLevelReached)
+    .begin()
+    .setLevel(30); // Go to 30%
 }
 
 void loop() {
   shutters.loop();
+
+  if (Serial.available() > 0) {
+    int level = Serial.parseInt();
+
+    Serial.print("Going to level ");
+    Serial.println(level);
+    shutters.setLevel(level);
+  }
 }

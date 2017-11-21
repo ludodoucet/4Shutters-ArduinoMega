@@ -3,11 +3,22 @@
 #######################################
 
 Shutters	KEYWORD1
+ShuttersOperation	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
+getUpCourseTime	KEYWORD2
+getDownCourseTime	KEYWORD2
+setOperationHandler	KEYWORD2
+restoreState	KEYWORD2
+getStateLength	KEYWORD2
+setWriteStateHandler	KEYWORD2
+setCourseTime	KEYWORD2
+getCalibrationRatio	KEYWORD2
+setCalibrationRatio	KEYWORD2
+onLevelReached	KEYWORD2
 begin	KEYWORD2
 setLevel	KEYWORD2
 stop  KEYWORD2
@@ -15,7 +26,12 @@ loop	KEYWORD2
 isIdle	KEYWORD2
 getCurrentLevel	KEYWORD2
 reset	KEYWORD2
+isReset	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
+
+UP	LITERAL1
+DOWN	LITERAL1
+HALT	LITERAL1
