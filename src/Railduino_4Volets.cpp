@@ -7,7 +7,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
-boolean debug = true;
+boolean debug = false;
 
 // Network settings
 byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
